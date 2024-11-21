@@ -1,0 +1,81 @@
+pipeline WBDataPipeline {
+
+    block DataRetriever oftype HttpExtractor {
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+    }
+
+    block FileParser oftype XLSXInterpreter { }
+
+    block SheetSelector oftype SheetPicker {
+        sheetName: "Figure S5.1.2";
+    }
+
+    block DataRange oftype CellRangeSelector {
+        select: range P2:S45;
+    }
+
+    block ColumnRenamer oftype CellWriter {
+        at: range A1:D1;
+        write: [
+            "Country Code",
+            "Economy",
+            "GDP per Capita",
+            "Bond Issuance Share"
+        ];
+    }
+
+    block BondDataInterpreter oftype TableInterpreter {
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "Bond Issuance Share" oftype BondRange
+        ];
+    }
+
+    block GDPDataInterpreter oftype TableInterpreter {
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "GDP per Capita" oftype PositiveDecimalValue
+        ];
+    }
+
+    block BondDataSaver oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "country-stats.sqlite";
+    }
+
+    block GDPDataSaver oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "country-stats.sqlite";
+    }
+
+    valuetype PositiveDecimalValue oftype decimal {
+        constraints: [
+            PositiveDecimalConstraint
+        ];
+    }
+
+    valuetype BondRange oftype decimal {
+        constraints: [
+            BondRangeConstraint
+        ];
+    }
+
+    constraint PositiveDecimalConstraint on decimal: value>0;
+    constraint BondRangeConstraint on decimal: value >= 0 and value <= 1;
+
+    DataRetriever
+        -> FileParser;
+
+    FileParser
+        -> SheetSelector
+        -> DataRange
+        -> ColumnRenamer;
+
+    ColumnRenamer
+        -> BondDataInterpreter
+        -> BondDataSaver;
+
+    ColumnRenamer
+        -> GDPDataInterpreter
+        -> GDPDataSaver;
+}
