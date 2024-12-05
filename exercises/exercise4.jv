@@ -3,6 +3,7 @@ pipeline TemperatureDataPipeline {
     DataDownloader
         -> ZipFileExtractor
         -> CSVFileSelector
+        -> FileToTextConverter
         -> CSVFileInterpreter
         -> RenameMainHeaders
         -> RenameBatteryHeader
@@ -22,6 +23,8 @@ pipeline TemperatureDataPipeline {
     block CSVFileSelector oftype FilePicker {
         path: "./data.csv";
     }
+
+    block FileToTextConverter oftype FileToTextInterpreter { }
 
     block CSVFileInterpreter oftype CSVInterpreter {
         delimiter: ";";
