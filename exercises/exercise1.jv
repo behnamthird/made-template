@@ -3,6 +3,7 @@ pipeline AirportsDataPipeline {
     DataDownloader
         -> TextFileConverter
         -> CSVFileInterpreter
+        -> RemoveColumns
         -> DefineTableSchema
         -> LoadToSQLite;
 
@@ -14,6 +15,15 @@ pipeline AirportsDataPipeline {
 
     block CSVFileInterpreter oftype CSVInterpreter {
         delimiter: ";";
+    }
+
+    block RemoveColumns oftype ColumnDeleter {
+        columns: [
+            "Zeitzone",
+            "DST",
+            "Zeitzonen-Datenbank",
+            "geo_punkt"
+        ];
     }
 
     block DefineTableSchema oftype TableInterpreter {
@@ -29,12 +39,6 @@ pipeline AirportsDataPipeline {
             "Längengrad" oftype FloatType,
             "Höhe" oftype FloatType
         ];
-        dropColumns: [
-            "Zeitzone",
-            "DST",
-            "Zeitzonen-Datenbank",
-            "geo_punkt"
-        ];
     }
 
     block LoadToSQLite oftype SQLiteLoader {
@@ -43,8 +47,14 @@ pipeline AirportsDataPipeline {
     }
 }
 
-valuetype IntegerType oftype integer { }
+valuetype IntegerType oftype integer {
+    constraints: [];
+}
 
-valuetype TextType oftype text { }
+valuetype TextType oftype text {
+    constraints: [];
+}
 
-valuetype FloatType oftype decimal { }
+valuetype FloatType oftype decimal {
+    constraints: [];
+}
