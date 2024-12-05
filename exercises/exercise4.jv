@@ -3,7 +3,7 @@ pipeline TemperatureDataPipeline {
     DataDownloader
         -> ZipFileExtractor
         -> CSVFileSelector
-        -> FileToTextConverter
+        -> TextFileInterpreter
         -> CSVFileInterpreter
         -> RenameMainHeaders
         -> RenameBatteryHeader
@@ -24,7 +24,7 @@ pipeline TemperatureDataPipeline {
         path: "./data.csv";
     }
 
-    block FileToTextConverter oftype FileToTextInterpreter { }
+    block TextFileInterpreter oftype TextFileInterpreter { }
 
     block CSVFileInterpreter oftype CSVInterpreter {
         delimiter: ";";
@@ -84,7 +84,7 @@ pipeline TemperatureDataPipeline {
 
     block LoadToSQLite oftype SQLiteLoader {
         table: "temperatures";
-        file: "temperatures.sqlite";
+        file: "./temperatures.sqlite";
     }
 }
 
