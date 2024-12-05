@@ -1,47 +1,39 @@
-pipeline AirportsDataPipeline {
+pipeline AirportsPipeline {
 
-    DataDownloader
-        -> TextFileConverter
-        -> CSVFileInterpreter
-        -> RemoveColumns
-        -> DefineTableSchema
-        -> LoadToSQLite;
+    AirportsExtractor
+        -> AirportsTextInterpreter
+        -> AirportsCSVParser
+        -> AirportsSchemaMapper
+        -> AirportsDataSaver;
 
-    block DataDownloader oftype HttpExtractor {
+    block AirportsExtractor oftype HttpExtractor {
         url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
     }
 
-    block TextFileConverter oftype TextFileInterpreter { }
+    block AirportsTextInterpreter oftype TextFileInterpreter { }
 
-    block CSVFileInterpreter oftype CSVInterpreter {
+    block AirportsCSVParser oftype CSVInterpreter {
         delimiter: ";";
+        enclosing: '"';
+        enclosingEscape: '"';
     }
 
-    block RemoveColumns oftype ColumnDeleter {
-        columns: [
-            "Zeitzone",
-            "DST",
-            "Zeitzonen-Datenbank",
-            "geo_punkt"
-        ];
-    }
-
-    block DefineTableSchema oftype TableInterpreter {
+    block AirportsSchemaMapper oftype TableInterpreter {
         header: true;
         columns: [
-            "ID" oftype IntegerType,
-            "Name" oftype TextType,
-            "Stadt" oftype TextType,
+            "Lfd. Nummer" oftype IntegerType,
+            "Name des Flughafens" oftype TextType,
+            "Ort" oftype TextType,
             "Land" oftype TextType,
             "IATA" oftype TextType,
             "ICAO" oftype TextType,
-            "Breitengrad" oftype FloatType,
-            "Längengrad" oftype FloatType,
-            "Höhe" oftype FloatType
+            "Latitude" oftype DecimalType,
+            "Longitude" oftype DecimalType,
+            "Altitude" oftype IntegerType
         ];
     }
 
-    block LoadToSQLite oftype SQLiteLoader {
+    block AirportsDataSaver oftype SQLiteLoader {
         table: "airports";
         file: "./airports.sqlite";
     }
@@ -55,6 +47,6 @@ valuetype TextType oftype text {
     constraints: [];
 }
 
-valuetype FloatType oftype decimal {
+valuetype DecimalType oftype decimal {
     constraints: [];
 }
