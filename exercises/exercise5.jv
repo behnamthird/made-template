@@ -44,6 +44,9 @@ pipeline StopPipeline {
     block StopDatabaseSaver oftype SQLiteLoader {
         table: 'stops';
         file: './output/stops_database.sqlite';
+        onError: {
+            log: "Database saving failed. Check table schema or input data.";
+        }
     }
 }
 
