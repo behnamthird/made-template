@@ -31,7 +31,6 @@ These datasets were chosen for their reliability, coverage, and relevance to the
 
 
 
-### Datasource1: ExampleSource
 Data Source 1: House Price Index (HPI)
 Metadata URL: FRED - HPI Metadata
 Data URL: FRED - HPI Data
