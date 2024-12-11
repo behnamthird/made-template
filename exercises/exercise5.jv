@@ -16,22 +16,18 @@ pipeline ProcessStopsPipeline {
 
     block ArchiveHandler oftype ArchiveInterpreter {
         archiveType: "zip";
-        errorHandler: "log"; // Log errors during extraction
     }
 
     block FileSelector oftype FilePicker {
         path: './stops.txt';
-        errorHandler: "log"; // Log errors during file selection
     }
 
     block TextFileProcessor oftype TextFileInterpreter {
-        errorHandler: "log"; // Log errors during text processing
     }
 
     block CSVProcessor oftype CSVInterpreter {
         enclosing: '"';
         enclosingEscape: '"';
-        errorHandler: "log"; // Log errors during CSV processing
     }
 
     block TableProcessor oftype TableInterpreter {
@@ -43,13 +39,11 @@ pipeline ProcessStopsPipeline {
             "stop_lon" oftype LongitudeType,
             "zone_id" oftype integer,
         ];
-        errorHandler: "log"; // Log errors during table processing
     }
 
     block DataSaver oftype SQLiteLoader {
         table: 'stops';
-        file: './output/gtfs_processed.sqlite'; // Ensure correct file path
-        errorHandler: "log"; // Log errors during data saving
+        file: './output/gtfs_processed.sqlite';
     }
 }
 
