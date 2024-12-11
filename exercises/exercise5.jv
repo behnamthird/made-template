@@ -1,0 +1,57 @@
+version "0.6.4"
+
+metadata "GTFS Data Pipeline" {
+  description = "Extract and validate GTFS stops data from zone 1925 and store it in an SQLite database."
+}
+
+extractor "gtfs_extractor" {
+  fetch "https://gtfs.rhoenenergie-bus.de/GTFS.zip"
+  select_file "stops.txt"
+}
+
+transformer "select_columns" {
+  columns = ["stop_id", "stop_name", "stop_lat", "stop_lon", "zone_id"]
+}
+
+transformer "filter_rows" {
+  condition = "zone_id == 1925"
+}
+
+validator "validate_data" {
+  rule "validate_stop_name" {
+    column = "stop_name"
+    type = "TEXT"
+    allow_umlauts = true
+  }
+
+  rule "validate_latitude" {
+    column = "stop_lat"
+    type = "FLOAT"
+    min = -90.0
+    max = 90.0
+  }
+
+  rule "validate_longitude" {
+    column = "stop_lon"
+    type = "FLOAT"
+    min = -90.0
+    max = 90.0
+  }
+
+  rule "validate_zone_id" {
+    column = "zone_id"
+    type = "BIGINT"
+  }
+}
+
+loader "sqlite_loader" {
+  database = "gtfs.sqlite"
+  table = "stops"
+  columns = {
+    stop_id   : "BIGINT",
+    stop_name : "TEXT",
+    stop_lat  : "FLOAT",
+    stop_lon  : "FLOAT",
+    zone_id   : "BIGINT"
+  }
+}
