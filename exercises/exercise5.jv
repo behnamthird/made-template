@@ -33,7 +33,7 @@ pipeline ProcessStopsPipeline {
         header: true;
         columns: [
             "stop_id" oftype integer,
-            "stop_name" oftype string,
+            "stop_name" oftype text,
             "stop_lat" oftype LatitudeType,
             "stop_lon" oftype LongitudeType,
             "zone_id" oftype FilteredZoneId,
