@@ -23,9 +23,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Make tests executable
-        run: chmod +x tests.sh
-
       - name: Run tests
         run: |
           if [ "$MOCK_DATA" = "true" ]; then
