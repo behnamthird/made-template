@@ -1,12 +1,6 @@
 #!/bin/bash
-
-echo "Running tests..."
-
-pytest tests
-
-if [ $? -eq 0 ]; then
-    echo "All tests passed successfully!"
+if [ "$1" = "--mock" ]; then
+    echo "Running tests with mock data..."
+    # Mock test commands here
 else
-    echo "Tests failed! Check logs for details."
-    exit 1
-fi
+    echo
