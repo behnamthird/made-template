@@ -1,11 +1,8 @@
-
 #!/bin/bash
 
 echo "Running tests..."
 
-
-pytest tests
-
+pytest project/test_system.py
 
 if [ $? -eq 0 ]; then
     echo "All tests passed successfully!"
