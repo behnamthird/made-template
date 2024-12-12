@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: CI Pipeline for Project
 
 on:
   push:
@@ -24,5 +24,5 @@ jobs:
 
       - name: Run Tests
         run: |
-          chmod +x tests.sh
-          ./tests.sh
+          chmod +x project/test.sh
+          ./project/test.sh
