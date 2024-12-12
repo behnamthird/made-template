@@ -1,0 +1,46 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Make tests executable
+        run: chmod +x tests.sh
+
+      - name: Run tests
+        run: |
+          if [ "$MOCK_DATA" = "true" ]; then
+            echo "Using mocks for testing as real data downloads are too expensive."
+            ./tests.sh --mock
+          else
+            ./tests.sh
+          fi
+        env:
+          MOCK_DATA: ${{ secrets.MOCK_DATA }}
+
+      - name: Notify on test success
+        if: success()
+        run: echo "Tests completed successfully!"
+
+      - name: Notify on test failure
+        if: failure()
+        run: echo "Tests failed. Please check the logs for more details."
