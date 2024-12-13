@@ -1,6 +1,12 @@
 #!/bin/bash
-if [ "$1" = "--mock" ]; then
-    echo "Running tests with mock data..."
-    # Mock test commands here
+
+echo "Starting tests..."
+
+# Example condition
+if [ -f somefile.txt ]; then
+  echo "File exists."
 else
-    echo
+  echo "File does not exist."
+fi
+
+echo "Tests completed successfully."
