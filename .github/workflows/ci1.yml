@@ -1,4 +1,4 @@
-name: CI Workflow
+name: CI for Made Project
 
 on:
   push:
@@ -18,21 +18,9 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Run tests
+      - name: Install dependencies
         run: |
-          if [ "$MOCK_DATA" = "true" ]; then
-            echo "Using mocks for testing as real data downloads are too expensive."
-            ./tests.sh --mock
-          else
-            ./tests.sh
-          fi
-        env:
-          MOCK_DATA: ${{ secrets.MOCK_DATA }}
+          pip install -r requirements.txt
 
-      - name: Notify on test success
-        if: success()
-        run: echo "Tests completed successfully!"
-
-      - name: Notify on test failure
-        if: failure()
-        run: echo "Tests failed. Please check the logs for more details."
+      - name: Run tests
+        run: ./tests.sh
