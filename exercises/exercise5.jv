@@ -1,0 +1,43 @@
+name: GTFS Stops Pipeline
+version: 0.6.4
+
+source:
+  type: file
+  path: ./GTFS_extracted/stops.txt
+
+pipeline:
+  - type: filter
+    description: "Filter stops from zone 1925"
+    conditions:
+      - column: zone_id
+        equals: 1925
+
+  - type: validate
+    description: "Validate data integrity"
+    rules:
+      - column: stop_name
+        regex: "^[a-zA-ZäöüÄÖÜß0-9 ,.-]+$" # بررسی حروف آلمانی
+      - column: stop_lat
+        range: [-90, 90]
+      - column: stop_lon
+        range: [-90, 90]
+
+  - type: cast
+    description: "Set proper data types for columns"
+    mappings:
+      - column: stop_id
+        type: BIGINT
+      - column: stop_name
+        type: TEXT
+      - column: stop_lat
+        type: FLOAT
+      - column: stop_lon
+        type: FLOAT
+      - column: zone_id
+        type: BIGINT
+
+  - type: write
+    description: "Write data into SQLite database"
+    format: sqlite
+    path: ./gtfs.sqlite
+    table: stops
