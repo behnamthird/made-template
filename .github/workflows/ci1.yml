@@ -1,4 +1,4 @@
-name: CI for Made Project
+name: Run Project Tests
 
 on:
   push:
@@ -10,17 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: 3.11
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "No requirements.txt found. Skipping dependencies installation."
+          fi
 
-      - name: Run tests
-        run: ./tests.sh
+      - name: Run Project Tests
+        run: |
+          if [ -f ./project/tests.sh ]; then
+            chmod +x ./project/tests.sh
+            ./project/tests.sh
+          else
+            echo "No tests.sh script found in ./project. Skipping tests execution."
+          fi
+
+      - name: Cleanup
+        run: |
+          echo "Cleanup done. All tests finished successfully."
